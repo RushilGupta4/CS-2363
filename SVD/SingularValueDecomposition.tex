@@ -1,0 +1,93 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{listings}
+
+\title{\Large\textbf{Singular Value Decomposition (SVD) Implementation Results}}
+\author{Rushil Gupta}
+\date{}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numbersep=5pt
+}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+This document presents the results of implementing Singular Value Decomposition (SVD) using custom algorithms and compares them with NumPy's built-in SVD functionality. The primary focus is on performance metrics and accuracy of the decomposition.
+
+\section*{Methodology}
+
+The custom SVD implementation utilizes Householder reflections for QR factorization and the QR algorithm for eigen-decomposition of $A^T A$. The overall algorithm follows these steps:
+
+\begin{enumerate}
+    \item Compute $A^T A$.
+    \item Apply the QR algorithm to find the eigenvalues and eigenvectors of $A^T A$.
+    \item This gives us $A^T A = V \Lambda V^T$.
+    \item Sort the eigenvalues in descending order to obtain the singular values.
+    \item By definition, $\Sigma = \sqrt{\Lambda}$, and $U\Sigma = A V$.
+    \item Then, it is straightforawrd to get $U$ since $\Sigma$ is diagonal.
+\end{enumerate}
+
+NumPy's optimized \texttt{numpy.linalg.svd} function is used as a benchmark for comparison in time. Another error metric is the reconstruction error $\| A - U \Sigma V^T \|$.
+
+\section*{Results}
+
+\subsection*{Performance Comparison}
+
+The table below summarizes the average runtime of the custom SVD implementation versus NumPy's SVD over multiple trials:
+
+\begin{table}[h]
+    \centering
+    \caption{Average Runtime (seconds)}
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+        Matrix Size & Custom SVD (s) & NumPy SVD (s) \\ \midrule
+        $50 \times 50$ & $9.4 \times 10^{-2}$ & $5.2 \times 10^{-4}$ \\
+        $100 \times 100$ & $2.9 \times 10^{-1}$ & $4.7 \times 10^{-3}$ \\
+        $500 \times 500$ & $1.62 \times 10^1$ & $6.7 \times 10^{-3}$ \\
+        $1000 \times 1000$ & $.57 \times 10^2$ & $8.1 \times 10^{-3}$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection*{Accuracy Comparison}
+
+The reconstruction error $\| A - U \Sigma V^T \|$ for the method is presented below:
+
+\begin{table}[h]
+    \centering
+    \caption{Reconstruction Error}
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        Matrix Size & Custom SVD Error \\ \midrule
+        $50 \times 50$ & $1.08 \times 10^{-13}$ \\ 
+        $100 \times 100$ & $2.70 \times 10^{-13}$ \\ 
+        $500 \times 500$ & $3.00 \times 10^{-12}$ \\ 
+        $1000 \times 1000$ & $9.78 \times 10^{-12}$ \\ 
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+\section*{Conclusion}
+
+The custom SVD implementation successfully decomposes matrices and reconstructs them with reasonable accuracy.
+
+\end{document}
